@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canton Network Uzman Quizi</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #00d4ff;
+            --primary-green: #00ff88;
+            --primary-red: #ff0066;
+            --dark-bg: #0f1b3d;
+            --darker-bg: #0a1432;
+            --card-bg: rgba(20, 40, 80, 0.95);
+            --text-light: #e0f7ff;
+            --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a3a6b 100%);
+            color: var(--text-light);
+            font-family: 'Roboto', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Splash Screen Stilleri */
+        #splash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 20, 50, 0.98);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .splash-content {
+            max-width: 800px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 3vw, 1.3rem);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            opacity: 0.9;
+        }
+
+        .highlight {
+            color: var(--primary-green);
+            font-weight: bold;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid var(--primary-blue);
+        }
+
+        .input-group {
+            max-width: 400px;
+            margin: 2rem auto;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+            border: 2px solid var(--primary-blue);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .error-message {
+            color: var(--primary-red);
+            font-weight: bold;
+            margin: 10px 0;
+            min-height: 24px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            margin: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid var(--primary-blue);
+        }
+
+        /* Game Screen Stilleri */
+        #game {
+            display: none;
+        }
+
+        .quiz-card {
+            background: var(--card-bg);
+            border: 2px solid var(--primary-blue);
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem auto;
+            box-shadow: var(--shadow-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .stats {
+            display: flex;
+            gap: 1rem;
+            font-weight: bold;
+            flex-wrap: wrap;
+        }
+
+        .stat {
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 1px solid var(--primary-blue);
+        }
+
+        .question-container {
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .institution-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 2rem;
+            background: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 0 20px var(--primary-green);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .institution-logo img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 50%;
+        }
+
+        .question-text {
+            font-size: clamp(1.2rem, 4vw, 1.5rem);
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .option {
+            background: linear-gradient(145deg, #2a4a7a, #1e3a5f);
+            border: 2px solid var(--primary-blue);
+            border-radius: 15px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-green);
+            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
+        }
+
+        .option.correct {
+            background: var(--primary-green);
+            color: var(--dark-bg);
+            border-color: #00cc66;
+        }
+
+        .option.wrong {
+            background: var(--primary-red);
+            color: white;
+            border-color: #cc0033;
+        }
+
+        .feedback {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            min-height: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feedback.success {
+            color: var(--primary-green);
+        }
+
+        .feedback.error {
+            color: var(--primary-red);
+        }
+
+        .awards-container {
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 255, 136, 0.2);
+            border-radius: 15px;
+            display: none;
+        }
+
+        .leaderboard {
+            margin-top: 2rem;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1.5rem;
+            border-radius: 15px;
+            display: none;
+        }
+
+        .ranks-container {
+            margin-top: 1rem;
+        }
+
+        .rank {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .rank:last-child {
+            border-bottom: none;
+        }
+
+        /* Responsive Tasarım */
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quiz-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .stats {
+                justify-content: center;
+            }
+            
+            .splash-content {
+                padding: 20px;
+            }
+        }
+
+        /* Animasyonlar */
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .animate-in {
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="particles-container" id="particles"></div>
+
+    <!-- Splash Screen -->
+    <div id="splash">
+        <div class="splash-content animate-in">
+            <h1 class="title">CANTON UZMAN YARIŞMASI</h1>
+            
+            <div class="info-section">
+                <p class="subtitle">
+                    <span class="highlight">Canton Network</span>, finansal kurumların 
+                    <strong>gizlilik odaklı</strong> ve <strong>birlikte çalışabilir</strong> 
+                    blokzincir ağıdır.
+                </p>
+                
+                <div class="features">
+                    <div class="feature-item">
+                        <h3>🚀 Zorluk Seviyesi: UZMAN</h3>
+                        <p>50 teknik soru | Detaylı bilgi gerektirir</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <h3>🏆 Ödül Sistemi</h3>
+                        <p>Doğru: +10 Puan | Yanlış: -5 Puan</p>
+                    </div>
+
+                    <div class="feature-item">
+                        <h3>⏱️ Süre Takibi</h3>
+                        <p>Gerçek zamanlı süre takibi</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <input type="text" id="playerName" class="form-input" 
+                       placeholder="Liderlik için isminizi girin" maxlength="15">
+                <div id="nameError" class="error-message"></div>
+            </div>
+
+            <button id="startBtn" class="btn pulse">UZMAN MODUNA BAŞLA</button>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="game" class="container">
+        <div class="quiz-card animate-in">
+            <div class="quiz-header">
+                <div class="stats">
+                    <div class="stat">Soru: <span id="questionNum">1</span>/50</div>
+                    <div class="stat">Skor: <span id="score">0</span></div>
+                    <div class="stat">Süre: <span id="timer">00:00</span></div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div id="institutionLogo" class="institution-logo">
+                    <img id="logoImg" src="" alt="Logo">
+                </div>
+                <div id="question" class="question-text"></div>
+            </div>
+
+            <div class="options-grid" id="options"></div>
+
+            <div id="feedback" class="feedback"></div>
+            <div id="awards" class="awards-container"></div>
+        </div>
+
+        <div class="action-buttons" style="text-align: center;">
+            <button id="restartBtn" class="btn btn-secondary" style="display: none;">
+                Tekrar Oyna
+            </button>
+        </div>
+
+        <div id="leaderboard" class="leaderboard">
+            <h3 style="text-align: center; color: var(--primary-green); margin-bottom: 1rem;">🏆 UZMAN LİDERLER TABLOSU</h3>
+            <div id="ranks" class="ranks-container"></div>
+        </div>
+    </div>
+
+    <script>
+        class CantonQuiz {
+            constructor() {
+                this.questions = this.initializeQuestions();
+                this.currentIndex = 0;
+                this.score = 0;
+                this.playerName = "";
+                this.answeredCount = 0;
+                this.awards = [];
+                this.startTime = null;
+                this.timerInterval = null;
+                
+                this.leaderboard = JSON.parse(localStorage.getItem('cantonLeaderboard')) || [];
+                this.usedNames = new Set(this.leaderboard.map(e => e.name.toLowerCase().trim()));
+                
+                this.initializeElements();
+                this.setupEventListeners();
+                this.createParticles();
+                this.showLeaderboard();
+            }
+
+            initializeQuestions() {
+                const institutions = [
+                    { 
+                        name: "Canton Network", 
+                        logo: "https://canton.network/img/logo.png", 
+                        questions: [
+                            {q: "Canton'da 'sub-transaction privacy' ne anlama gelir?", a: "Sadece ilgili taraflar işlemi görür", options: ["Tüm ağ görür", "Sadece ilgili taraflar işlemi görür", "Hiç kimse görmez", "Sadece admin görür"]},
+                            {q: "Canton'un 'synchronization protocol' hangi algoritmayı kullanır?", a: "BFT-based consensus", options: ["PoW", "BFT-based consensus", "PoS", "Raft"]},
+                            {q: "DAML'de 'choice' kavramı neyi tanımlar?", a: "Akıllı sözleşmede bir tarafın yapabileceği eylemi", options: ["Veri tipi", "Akıllı sözleşmede bir tarafın yapabileceği eylemi", "Güvenlik katmanı", "Zaman damgası"]},
+                            {q: "Canton'da 'ledger pruning' nasıl çalışır?", a: "Eski veriler silinmez, arşivlenir", options: ["Tüm veriler silinir", "Eski veriler silinmez, arşivlenir", "Sadece yanlışlar silinir", "Hiçbir şey silinmez"]},
+                            {q: "Canton'un 'multi-party submission' özelliği ne sağlar?", a: "Birden fazla tarafın ortak işlem imzalaması", options: ["Hız artışı", "Birden fazla tarafın ortak işlem imzalaması", "Gizlilik kaybı", "Veri kaybı"]},
+                            {q: "Canton'da 'mediator' node'unun görevi nedir?", a: "İşlem sırasını doğrular", options: ["Veri saklar", "İşlem sırasını doğrular", "Anahtar üretir", "Kullanıcı doğrular"]},
+                            {q: "Canton'un 'domain' kavramı neyi temsil eder?", a: "Birlikte çalışan node grubu", options: ["Bir kullanıcı", "Birlikte çalışan node grubu", "Bir işlem", "Bir akıllı sözleşme"]},
+                            {q: "'Canton Global Sync' neyi senkronize eder?", a: "Tüm domain'lerin ledger'ını", options: ["Sadece bir domain", "Tüm domain'lerin ledger'ını", "Sadece kullanıcıları", "Sadece anahtarları"]},
+                            {q: "DAML'de 'ensure' anahtar kelimesi neyi garanti eder?", a: "Koşulun her zaman doğru olduğunu", options: ["Zamanı", "Koşulun her zaman doğru olduğunu", "İmzayı", "Veri tipini"]},
+                            {q: "Canton'da 'divulgence' ne anlama gelir?", a: "Gizli verinin ilgili tarafa açılması", options: ["Veri silinmesi", "Gizli verinin ilgili tarafa açılması", "İşlem iptali", "Anahtar değişimi"]},
+                            {q: "Canton'da 'causality' neyi garanti eder?", a: "İşlem sırasının tutarlılığını", options: ["Gizliliği", "İşlem sırasının tutarlılığını", "Hızı", "Güvenliği"]},
+                            {q: "Canton'da 'confirmation policy' neyi tanımlar?", a: "Kaç node onayı gerektiğini", options: ["Zamanı", "Kaç node onayı gerektiğini", "Ücreti", "Veri tipini"]},
+                            {q: "Canton'da 'participant node' ne yapar?", a: "Ledger'ı tutar ve doğrular", options: ["Sadece izler", "Ledger'ı tutar ve doğrular", "Sadece imzalar", "Hiçbir şey yapmaz"]},
+                            {q: "Canton'da 'sequencer' node'unun görevi nedir?", a: "İşlemleri sıraya koyar", options: ["Doğrulama", "İşlemleri sıraya koyar", "Saklama", "İmzalama"]},
+                            {q: "Canton'da 'topology' neyi tanımlar?", a: "Node'ların bağlantı yapısını", options: ["Veri yapısını", "Node'ların bağlantı yapısını", "Zamanı", "Ücreti"]},
+                            {q: "Canton'da 'privacy model' hangi prensibe dayanır?", a: "Need-to-know", options: ["Full disclosure", "Need-to-know", "Open access", "Admin-only"]},
+                            {q: "Canton'da 'ledger API' hangi protokolü kullanır?", a: "gRPC", options: ["REST", "gRPC", "WebSocket", "GraphQL"]},
+                            {q: "Canton'da 'commitment' neyi temsil eder?", a: "Kriptografik işlem taahhüdü", options: ["Para taahhüdü", "Kriptografik işlem taahhüdü", "Zaman taahhüdü", "Veri taahhüdü"]},
+                            {q: "Canton'da 'view' neyi gösterir?", a: "Bir tarafın gördüğü işlem görünümü", options: ["Tüm ağı", "Bir tarafın gördüğü işlem görünümü", "Sadece geçmiş", "Sadece gelecek"]},
+                            {q: "Canton'da 'activeness check' neyi kontrol eder?", a: "Sözleşmenin hala aktif olup olmadığını", options: ["İmzayı", "Sözleşmenin hala aktif olup olmadığını", "Zamanı", "Veri tipini"]},
+                        ] 
+                    },
+                    { 
+                        name: "Digital Asset", 
+                        logo: "https://www.digitalasset.com/static/logo.png", 
+                        questions: [
+                            {q: "DAML'de 'template' ile 'contract' arasındaki fark nedir?", a: "Template şablon, contract örnek", options: ["Aynı şey", "Template şablon, contract örnek", "Template veri, contract fonksiyon", "Template fonksiyon, contract veri"]},
+                            {q: "DAML'de 'observer' ile 'signatory' farkı nedir?", a: "Observer görür ama imzalayamaz", options: ["Aynı yetki", "Observer görür ama imzalayamaz", "Observer imzalayabilir", "Signatory göremez"]},
+                            {q: "DAML'de 'archive' işlemi ne yapar?", a: "Sözleşmeyi devre dışı bırakır", options: ["Silmek", "Sözleşmeyi devre dışı bırakır", "Kopyalar", "Günceller"]},
+                            {q: "DAML'de 'fetched' ile 'created' arasındaki fark nedir?", a: "Fetched başka sözleşmeden gelir", options: ["Aynı şey", "Fetched başka sözleşmeden gelir", "Created yeni oluşur", "Fark yok"]},
+                        ] 
+                    },
+                    { 
+                        name: "JPMorgan", 
+                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/JPMorgan_Chase_Logo_2000.svg/1280px-JPMorgan_Chase_Logo_2000.svg.png", 
+                        questions: [
+                            {q: "JPMorgan'ın Onyx platformu hangi teknolojiyi kullanır?", a: "Canton + Quorum", options: ["Ethereum", "Canton + Quorum", "Hyperledger", "Corda"]},
+                            {q: "Onyx'te 'Liink' neyi sağlar?", a: "Kurumlar arası mesajlaşma", options: ["Token transferi", "Kurumlar arası mesajlaşma", "Akıllı sözleşme", "Veri saklama"]},
+                        ] 
+                    }
+                ];
+
+                let allQuestions = institutions.flatMap(inst => 
+                    inst.questions.map(q => ({ ...q, institution: inst }))
+                );
+                
+                return allQuestions.sort(() => Math.random() - 0.5).slice(0, 50);
+            }
+
+            initializeElements() {
+                this.elements = {
+                    splash: document.getElementById('splash'),
+                    game: document.getElementById('game'),
+                    playerNameInput: document.getElementById('playerName'),
+                    nameError: document.getElementById('nameError'),
+                    startBtn: document.getElementById('startBtn'),
+                    questionNum: document.getElementById('questionNum'),
+                    score: document.getElementById('score'),
+                    timer: document.getElementById('timer'),
+                    question: document.getElementById('question'),
+                    logoImg: document.getElementById('logoImg'),
+                    options: document.getElementById('options'),
+                    feedback: document.getElementById('feedback'),
+                    awards: document.getElementById('awards'),
+                    restartBtn: document.getElementById('restartBtn'),
+                    leaderboard: document.getElementById('leaderboard'),
+                    ranks: document.getElementById('ranks')
+                };
+            }
+
+            setupEventListeners() {
+                this.elements.startBtn.addEventListener('click', () => this.startGame());
+                this.elements.restartBtn.addEventListener('click', () => this.restartGame());
+                
+                this.elements.playerNameInput.addEventListener('input', () => {
+                    this.validateName();
+                });
+
+                this.elements.playerNameInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        this.startGame();
+                    }
+                });
+            }
+
+            validateName() {
+                const name = this.elements.playerNameInput.value.trim();
+                if (this.usedNames.has(name.toLowerCase())) {
+                    this.elements.nameError.textContent = "Bu isim zaten alınmış!";
+                    return false;
+                }
+                this.elements.nameError.textContent = "";
+                return true;
+            }
+
+            startGame() {
+                const name = this.elements.playerNameInput.value.trim();
+                if (!name) {
+                    this.elements.nameError.textContent = "Lütfen isminizi girin!";
+                    return;
+                }
+                
+                if (!this.validateName()) {
+                    return;
+                }
+
+                this.playerName = name;
+                this.usedNames.add(name.toLowerCase());
+                
+                this.elements.splash.style.display = 'none';
+                this.elements.game.style.display = 'block';
+                
+                this.resetGame();
+                this.startTimer();
+                this.showQuestion();
+            }
+
+            resetGame() {
+                this.currentIndex = 0;
+                this.score = 0;
+                this.answeredCount = 0;
+                this.awards = [];
+                this.elements.awards.style.display = 'none';
+                this.elements.awards.innerHTML = '';
+                this.elements.feedback.textContent = '';
+                this.updateUI();
+            }
+
+            startTimer() {
+                this.startTime = Date.now();
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+                
+                this.timerInterval = setInterval(() => {
+                    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                    const seconds = (elapsed % 60).toString().padStart(2, '0');
+                    this.elements.timer.textContent = `${minutes}:${seconds}`;
+                }, 1000);
+            }
+
+            showQuestion() {
+                if (this.currentIndex >= this.questions.length) {
+                    this.endGame();
+                    return;
+                }
+
+                const question = this.questions[this.currentIndex];
+                this.displayQuestion(question);
+                this.updateUI();
+            }
+
+            displayQuestion(question) {
+                // Logo ayarla
+                this.elements.logoImg.src = question.institution.logo;
+                this.elements.logoImg.alt = question.institution.name + " Logo";
+                this.elements.logoImg.onerror = () => {
+                    this.elements.logoImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBkNGZmIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzAwZDRmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+MoDwvdGV4dD48L3N2Zz4=';
+                };
+
+                this.elements.question.textContent = question.q;
+                this.elements.questionNum.textContent = this.currentIndex + 1;
+                
+                this.elements.options.innerHTML = '';
+                this.shuffleArray([...question.options]).forEach(option => {
+                    const optionElement = this.createOptionElement(option, question.a);
+                    this.elements.options.appendChild(optionElement);
+                });
+            }
+
+            createOptionElement(option, correctAnswer) {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = option;
+                div.addEventListener('click', () => this.selectAnswer(option, div, correctAnswer));
+                return div;
+            }
+
+            selectAnswer(selected, element, correctAnswer) {
+                this.answeredCount++;
+                this.disableOptions();
+
+                if (selected === correctAnswer) {
+                    this.handleCorrectAnswer(element);
+                } else {
+                    this.handleWrongAnswer(element, correctAnswer);
+                }
+
+                this.checkAwards();
+                this.updateUI();
+                
+                setTimeout(() => {
+                    this.currentIndex++;
+                    this.showQuestion();
+                }, 2000);
+            }
+
+            handleCorrectAnswer(element) {
+                element.classList.add('correct');
+                this.score += 10;
+                this.showFeedback('✅ Doğru! +10 Puan', 'success');
+                this.playSound('correct');
+            }
+
+            handleWrongAnswer(element, correctAnswer) {
+                element.classList.add('wrong');
+                this.score = Math.max(0, this.score - 5);
+                this.showFeedback('❌ Yanlış! -5 Puan', 'error');
+                this.highlightCorrectAnswer(correctAnswer);
+                this.playSound('wrong');
+            }
+
+            disableOptions() {
+                document.querySelectorAll('.option').forEach(opt => {
+                    opt.style.pointerEvents = 'none';
+                });
+            }
+
+            highlightCorrectAnswer(correctAnswer) {
+                document.querySelectorAll('.option').forEach(opt => {
+                    if (opt.textContent === correctAnswer) {
+                        opt.classList.add('correct');
+                    }
+                });
+            }
+
+            showFeedback(message, type) {
+                this.elements.feedback.textContent = message;
+                this.elements.feedback.className = `feedback ${type}`;
+            }
+
+            playSound(type) {
+                // Basit ses efekti - gerçek uygulamada audio elementleri kullanılabilir
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                if (type === 'correct') {
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                } else {
+                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                }
+                
+                oscillator.start();
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            }
+
+            checkAwards() {
+                if (this.answeredCount === 25 && !this.awards.includes("OG")) {
+                    this.awards.push("OG");
+                    this.showAward("OG Uzmanı");
+                }
+                if (this.answeredCount === 40 && !this.awards.includes("sshh its a secret")) {
+                    this.awards.push("sshh its a secret");
+                    this.showAward("Gizli Uzman");
+                }
+            }
+
+            showAward(name) {
+                this.elements.awards.innerHTML += `<div style="color: var(--primary-green); font-weight: bold; margin: 5px 0;">🎉 UZMAN ÖDÜLÜ: ${name}</div>`;
+                this.elements.awards.style.display = 'block';
+            }
+
+            updateUI() {
+                this.elements.score.textContent = this.score;
+            }
+
+            endGame() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                }
+
+                this.playSound('correct');
+                
+                // Liderlik tablosuna ekle
+                this.leaderboard.push({ 
+                    name: this.playerName, 
+                    score: this.score,
+                    time: this.elements.timer.textContent
+                });
+                this.leaderboard.sort((a, b) => b.score - a.score);
+                this.leaderboard = this.leaderboard.slice(0, 10);
+                localStorage.setItem('cantonLeaderboard', JSON.stringify(this.leaderboard));
+                
+                this.showLeaderboard();
+                this.elements.restartBtn.style.display = 'inline-block';
+                
+                this.showFeedback(`🎊 TEBRİKLER! Oyun Tamamlandı - Toplam Skor: ${this.score}`, 'success');
+            }
+
+            showLeaderboard() {
+                this.elements.ranks.innerHTML = '';
+                this.leaderboard.forEach((entry, i) => {
+                    const div = document.createElement('div');
+                    div.className = 'rank';
+                    div.innerHTML = `
+                        <span>${i+1}. ${entry.name}</span>
+                        <span>${entry.score} puan</span>
+                        <span>${entry.time}</span>
+                    `;
+                    this.elements.ranks.appendChild(div);
+                });
+                this.elements.leaderboard.style.display = 'block';
+            }
+
+            restartGame() {
+                this.elements.restartBtn.style.display = 'none';
+                this.elements.leaderboard.style.display = 'none';
+                this.elements.splash.style.display = 'flex';
+                this.elements.game.style.display = 'none';
+                this.elements.playerNameInput.value = '';
+                this.elements.nameError.textContent = '';
+            }
+
+            shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            createParticles() {
+                const container = document.getElementById('particles');
+                const particleCount = 50;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    const size = Math.random() * 20 + 5;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    particle.style.animationDelay = `${Math.random() * 6}s`;
+                    particle.style.background = Math.random() > 0.5 ? 'var(--primary-blue)' : 'var(--primary-green)';
+                    particle.style.opacity = Math.random() * 0.3 + 0.1;
+                    
+                    container.appendChild(particle);
+                }
+            }
+        }
+
+        // Uygulamayı başlat
+        document.addEventListener('DOMContentLoaded', () => {
+            new CantonQuiz();
+        });
+    </script>
+</body>
+</html>
