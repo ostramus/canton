@@ -1,835 +1,133 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canton Network Uzman Quizi</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary-blue: #00d4ff;
-            --primary-green: #00ff88;
-            --primary-red: #ff0066;
-            --dark-bg: #0f1b3d;
-            --darker-bg: #0a1432;
-            --card-bg: rgba(20, 40, 80, 0.95);
-            --text-light: #e0f7ff;
-            --shadow-glow: 0 0 20px rgba(0, 212, 255, 0.4);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a3a6b 100%);
-            color: var(--text-light);
-            font-family: 'Roboto', sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .particles-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .particle {
-            position: absolute;
-            background: var(--primary-blue);
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: float 6s infinite ease-in-out;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Splash Screen Stilleri */
-        #splash {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 20, 50, 0.98);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .splash-content {
-            max-width: 800px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 2rem;
-            text-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
-        }
-
-        .subtitle {
-            font-size: clamp(1rem, 3vw, 1.3rem);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            opacity: 0.9;
-        }
-
-        .highlight {
-            color: var(--primary-green);
-            font-weight: bold;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .feature-item {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 10px;
-            border: 1px solid var(--primary-blue);
-        }
-
-        .input-group {
-            max-width: 400px;
-            margin: 2rem auto;
-        }
-
-        .form-input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 1.1rem;
-            border: 2px solid var(--primary-blue);
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .form-input:focus {
-            outline: none;
-            border-color: var(--primary-green);
-            box-shadow: var(--shadow-glow);
-        }
-
-        .error-message {
-            color: var(--primary-red);
-            font-weight: bold;
-            margin: 10px 0;
-            min-height: 24px;
-        }
-
-        .btn {
-            background: linear-gradient(45deg, var(--primary-blue), var(--primary-green));
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            margin: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid var(--primary-blue);
-        }
-
-        /* Game Screen Stilleri */
-        #game {
-            display: none;
-        }
-
-        .quiz-card {
-            background: var(--card-bg);
-            border: 2px solid var(--primary-blue);
-            border-radius: 20px;
-            padding: 2rem;
-            margin: 2rem auto;
-            box-shadow: var(--shadow-glow);
-            backdrop-filter: blur(10px);
-        }
-
-        .quiz-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .stats {
-            display: flex;
-            gap: 1rem;
-            font-weight: bold;
-            flex-wrap: wrap;
-        }
-
-        .stat {
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            border: 1px solid var(--primary-blue);
-        }
-
-        .question-container {
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        .institution-logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 2rem;
-            background: white;
-            border-radius: 50%;
-            padding: 10px;
-            box-shadow: 0 0 20px var(--primary-green);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .institution-logo img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 50%;
-        }
-
-        .question-text {
-            font-size: clamp(1.2rem, 4vw, 1.5rem);
-            font-weight: 500;
-            line-height: 1.5;
-            margin-bottom: 2rem;
-            padding: 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 15px;
-        }
-
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1rem;
-            margin: 2rem 0;
-        }
-
-        .option {
-            background: linear-gradient(145deg, #2a4a7a, #1e3a5f);
-            border: 2px solid var(--primary-blue);
-            border-radius: 15px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1rem;
-            text-align: center;
-        }
-
-        .option:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary-green);
-            box-shadow: 0 10px 25px rgba(0, 255, 136, 0.3);
-        }
-
-        .option.correct {
-            background: var(--primary-green);
-            color: var(--dark-bg);
-            border-color: #00cc66;
-        }
-
-        .option.wrong {
-            background: var(--primary-red);
-            color: white;
-            border-color: #cc0033;
-        }
-
-        .feedback {
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin: 1rem 0;
-            min-height: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .feedback.success {
-            color: var(--primary-green);
-        }
-
-        .feedback.error {
-            color: var(--primary-red);
-        }
-
-        .awards-container {
-            margin: 1rem 0;
-            padding: 1rem;
-            background: rgba(0, 255, 136, 0.2);
-            border-radius: 15px;
-            display: none;
-        }
-
-        .leaderboard {
-            margin-top: 2rem;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 1.5rem;
-            border-radius: 15px;
-            display: none;
-        }
-
-        .ranks-container {
-            margin-top: 1rem;
-        }
-
-        .rank {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px;
-            border-bottom: 1px solid var(--primary-blue);
-            margin-bottom: 0.5rem;
-        }
-
-        .rank:last-child {
-            border-bottom: none;
-        }
-
-        /* Responsive Tasarım */
-        @media (max-width: 768px) {
-            .options-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .quiz-header {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .stats {
-                justify-content: center;
-            }
-            
-            .splash-content {
-                padding: 20px;
-            }
-        }
-
-        /* Animasyonlar */
-        @keyframes slideInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .animate-in {
-            animation: slideInUp 0.6s ease-out;
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-    </style>
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Canton Quiz</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(135deg,#0f1b3d,#1a3a6b);color:#e0f7ff;font-family:Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+.particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1}.particle{position:absolute;background:#00d4ff;border-radius:50%;opacity:0.3;animation:float 6s infinite ease-in-out}
+.main-container{width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh}
+#splash-screen,#quiz-container{width:100%;max-width:800px;background:rgba(20,40,80,0.95);border-radius:20px;padding:40px 30px;border:2px solid #00d4ff;box-shadow:0 0 40px rgba(0,212,255,0.3);margin:20px;text-align:center;animation:slideUp 1s ease-out}
+.canton-logo{width:120px;height:120px;margin:0 auto 30px;border-radius:50%;background:white;padding:15px;box-shadow:0 0 30px rgba(0,212,255,0.5);animation:pulse 2s infinite}
+.canton-logo img{width:100%;height:100%;border-radius:50%;object-fit:cover}
+.main-title{font-size:clamp(2rem,5vw,3.5rem);background:linear-gradient(45deg,#00d4ff,#00ff88);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:20px}
+.subtitle{font-size:clamp(1rem,3vw,1.3rem);margin-bottom:30px;line-height:1.6}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px;margin:40px 0}
+.feature-card{background:rgba(255,255,255,0.1);padding:25px 20px;border-radius:15px;border:1px solid #00d4ff;transition:transform 0.3s ease}
+.feature-card:hover{transform:translateY(-5px);border-color:#00ff88}
+.feature-card h3{color:#00ff88;margin-bottom:10px}
+.start-btn,.control-btn{background:linear-gradient(45deg,#00d4ff,#00ff88);color:white;border:none;padding:18px 50px;font-size:clamp(1rem,3vw,1.2rem);border-radius:50px;cursor:pointer;margin:20px;transition:all 0.3s ease;box-shadow:0 8px 25px rgba(0,212,255,0.3);animation:pulse 2s infinite}
+.start-btn:hover,.control-btn:hover{transform:translateY(-3px);box-shadow:0 15px 35px rgba(0,212,255,0.5)}
+.quiz-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;flex-wrap:wrap;gap:15px}
+.stats{display:flex;gap:15px;font-weight:bold;flex-wrap:wrap;justify-content:center}
+.stat{padding:10px 20px;background:rgba(0,0,0,0.3);border-radius:10px;border:1px solid #00d4ff;font-size:clamp(0.8rem,2vw,1rem);min-width:120px}
+.difficulty-badge{padding:8px 16px;border-radius:20px;font-weight:bold;min-width:100px}.easy{background:#00ff88;color:#0f1b3d}.medium{background:#ffaa00;color:#0f1b3d}.hard{background:#ff4444;color:white}.very-hard{background:#cc00cc;color:white}
+.question-display{font-size:clamp(1.1rem,3vw,1.3rem);margin:30px 0;padding:25px 20px;background:rgba(0,0,0,0.3);border-radius:15px;line-height:1.6;animation:fadeIn 0.8s ease-out}
+.options-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:15px;margin:30px 0}
+.option{padding:20px 15px;background:linear-gradient(145deg,#2a4a7a,#1e3a5f);border:2px solid #00d4ff;border-radius:15px;cursor:pointer;transition:all 0.3s ease;text-align:center;font-size:clamp(0.9rem,2vw,1rem);animation:slideIn 0.6s ease-out;min-height:80px;display:flex;align-items:center;justify-content:center}
+.option:hover{transform:translateY(-5px);border-color:#00ff88;box-shadow:0 10px 25px rgba(0,255,136,0.2)}
+.option.correct{background:#00ff88;color:#0f1b3d;animation:bounce 0.6s}.option.wrong{background:#ff0066;color:white;animation:shake 0.6s}
+.feedback{margin:20px 0;padding:20px;border-radius:15px;text-align:center;font-weight:bold;font-size:clamp(1rem,3vw,1.2rem);animation:popIn 0.5s ease-out}.correct-feedback{background:rgba(0,255,136,0.2);color:#00ff88;border:1px solid #00ff88}.wrong-feedback{background:rgba(255,0,102,0.2);color:#ff0066;border:1px solid #ff0066}
+.lang-btn{position:fixed;top:20px;right:20px;background:rgba(255,255,255,0.1);border:2px solid #00d4ff;color:#e0f7ff;padding:10px 20px;border-radius:20px;cursor:pointer;z-index:100;transition:all 0.3s ease}
+.lang-btn:hover{background:#00d4ff;transform:translateY(-2px)}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-20px) rotate(180deg)}}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}@keyframes slideUp{from{opacity:0;transform:translateY(50px)}to{opacity:1;transform:translateY(0)}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes slideIn{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}}@keyframes popIn{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}@keyframes bounce{0%,20%,60%,100%{transform:translateY(0)}40%{transform:translateY(-10px)}80%{transform:translateY(-5px)}}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@media (max-width:768px){.features-grid,.options-grid{grid-template-columns:1fr}.quiz-header{flex-direction:column}.stats{flex-direction:column}.stat{width:100%;max-width:200px}#splash-screen,#quiz-container{padding:30px 20px}.option{padding:15px 10px;min-height:70px}.question-display{padding:20px 15px;margin:20px 0}.lang-btn{top:10px;right:10px}}@media (max-width:480px){#splash-screen,#quiz-container{padding:20px 15px}.canton-logo{width:100px;height:100px}.feature-card{padding:15px 10px}.stat{padding:8px 15px}.option{padding:12px 8px;min-height:60px}}
+</style>
 </head>
 <body>
-    <div class="particles-container" id="particles"></div>
+<div class="particles" id="particles"></div>
+<button class="lang-btn" id="langToggle">EN</button>
+<div class="main-container">
+<div id="splash-screen">
+<div class="canton-logo"><img src="https://raw.githubusercontent.com/ostramus/canton/main/cn-favicon-05%201.webp" alt="Canton" onerror="this.style.display='none'"></div>
+<h1 class="main-title" id="mainTitle">CANTON NETWORK QUIZ</h1>
+<p class="subtitle" id="mainDescription"><span style="color:#00ff88">Canton Network</span> is a <strong>privacy-enabled interoperable blockchain network</strong> for institutional finance.</p>
+<div class="features-grid">
+<div class="feature-card"><h3>🔒 Privacy-First</h3><p>Sub-transaction privacy for relevant parties only</p></div>
+<div class="feature-card"><h3>🔄 Interoperability</h3><p>Connectivity between financial institutions</p></div>
+<div class="feature-card"><h3>⚡ BFT Consensus</h3><p>Byzantine Fault Tolerant consensus</p></div>
+<div class="feature-card"><h3>🏛️ Regulatory Ready</h3><p>Meets compliance requirements</p></div>
+</div>
+<div style="margin:30px 0"><h3 style="color:#00ff88;margin-bottom:15px">Quiz Features:</h3><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px"><div>🎯 40 Questions</div><div>📊 4 Levels</div><div>🌐 Bilingual</div><div>🏆 Smart Score</div></div></div>
+<button class="start-btn" id="startBtn">START QUIZ</button>
+</div>
+<div id="quiz-container" style="display:none">
+<div class="quiz-card">
+<div class="quiz-header">
+<div class="stats"><div id="score">Score: 0</div><div id="questionCount">Question: 1/40</div><div id="timer">Time: 00:00</div></div>
+<div id="difficultyBadge" class="difficulty-badge easy">Easy</div>
+</div>
+<div id="questionDisplay" class="question-display"></div>
+<div class="options-grid" id="optionsContainer"></div>
+<div id="feedback" class="feedback"></div>
+<div class="quiz-controls">
+<button id="nextBtn" class="control-btn" style="display:none">Next</button>
+<button id="restartBtn" class="control-btn" style="display:none;background:#ffaa00">Restart</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+const questions=[
+{q_en:"What is Canton Network designed for?",q_tr:"Canton Network ne için tasarlanmıştır?",a_en:"Financial institutions interoperability",a_tr:"Finansal kurumlar için birlikte çalışabilirlik",options_en:["Social media","Gaming","Financial institutions interoperability","E-commerce"],options_tr:["Sosyal medya","Oyun","Finansal kurumlar için birlikte çalışabilirlik","E-ticaret"],difficulty:"easy"},
+{q_en:"Which language for Canton smart contracts?",q_tr:"Canton akıllı sözleşmeleri hangi dil?",a_en:"DAML",a_tr:"DAML",options_en:["Solidity","DAML","Rust","JavaScript"],options_tr:["Solidity","DAML","Rust","JavaScript"],difficulty:"easy"},
+{q_en:"Canton's main advantage?",q_tr:"Canton'un temel avantajı?",a_en:"Privacy and interoperability",a_tr:"Gizlilik ve birlikte çalışabilirlik",options_en:["Only speed","Only privacy","Privacy and interoperability","Free transactions"],options_tr:["Sadece hız","Sadece gizlilik","Gizlilik ve birlikte çalışabilirlik","Ücretsiz işlemler"],difficulty:"easy"},
+{q_en:"What type of network is Canton?",q_tr:"Canton nasıl bir ağdır?",a_en:"Decentralized blockchain network",a_tr:"Merkeziyetsiz blockchain ağı",options_en:["Centralized database","Social network","Decentralized blockchain network","Payment processor"],options_tr:["Merkezi veritabanı","Sosyal ağ","Merkeziyetsiz blockchain ağı","Ödeme işlemcisi"],difficulty:"easy"},
+{q_en:"Which company develops Canton?",q_tr:"Canton'u hangi şirket geliştirir?",a_en:"Digital Asset",a_tr:"Digital Asset",options_en:["Google","Microsoft","Digital Asset","IBM"],options_tr:["Google","Microsoft","Digital Asset","IBM"],difficulty:"easy"},
+{q_en:"What does DAML stand for?",q_tr:"DAML neyin kısaltmasıdır?",a_en:"Digital Asset Modeling Language",a_tr:"Digital Asset Modeling Language",options_en:["Digital Asset Modeling Language","Distributed Application Layer","Data Access Language","Digital Asset Management"],options_tr:["Digital Asset Modeling Language","Dağıtık Uygulama Katmanı","Veri Erişim Dili","Dijital Varlık Yönetimi"],difficulty:"easy"},
+{q_en:"What is a Canton domain?",q_tr:"Canton domain nedir?",a_en:"A privacy and governance boundary",a_tr:"Bir gizlilik ve yönetim sınırı",options_en:["A website","A database","A privacy and governance boundary","A wallet"],options_tr:["Bir web sitesi","Bir veritabanı","Bir gizlilik ve yönetim sınırı","Bir cüzdan"],difficulty:"easy"},
+{q_en:"Primary consensus in Canton?",q_tr:"Canton'da birincil konsensüs?",a_en:"BFT-based consensus",a_tr:"BFT tabanlı konsensüs",options_en:["Proof of Work","Proof of Stake","BFT-based consensus","Delegated Proof of Stake"],options_tr:["İş İspatı","Hisse İspatı","BFT tabanlı konsensüs","Temsilci Hisse İspatı"],difficulty:"easy"},
+{q_en:"How Canton ensures privacy?",q_tr:"Canton gizliliği nasıl sağlar?",a_en:"Sub-transaction visibility control",a_tr:"Alt işlem görünürlük kontrolü",options_en:["Public ledger","Full encryption","Sub-transaction visibility control","No privacy"],options_tr:["Herkese açık defter","Tam şifreleme","Alt işlem görünürlük kontrolü","Gizlilik yok"],difficulty:"easy"},
+{q_en:"Purpose of ledger pruning?",q_tr:"Defter budamanın amacı?",a_en:"To manage storage efficiently",a_tr:"Depolamayı verimli yönetmek",options_en:["Delete all data","To manage storage efficiently","Speed up transactions","Increase privacy"],options_tr:["Tüm veriyi silmek","Depolamayı verimli yönetmek","İşlemleri hızlandırmak","Gizliliği artırmak"],difficulty:"easy"},
+{q_en:"What is 'sub-transaction privacy'?",q_tr:"'Alt işlem gizliliği' nedir?",a_en:"Only relevant parties see transaction parts",a_tr:"Sadece ilgili taraflar işlem parçalarını görür",options_en:["Everyone sees everything","Only admin sees","Only relevant parties see transaction parts","No one sees"],options_tr:["Herkes her şeyi görür","Sadece admin görür","Sadece ilgili taraflar görür","Kimse görmez"],difficulty:"medium"},
+{q_en:"How Canton handles cross-domain?",q_tr:"Canton domainler arası işlemleri nasıl ele alır?",a_en:"Through synchronization protocol",a_tr:"Senkronizasyon protokolü ile",options_en:["Manual approval","Through synchronization protocol","Ignore cross-domain","Centralized validation"],options_tr:["Manuel onay","Senkronizasyon protokolü ile","Domainler arası yok say","Merkezi doğrulama"],difficulty:"medium"},
+{q_en:"What is a DAML template?",q_tr:"DAML template nedir?",a_en:"A smart contract blueprint",a_tr:"Bir akıllı sözleşme taslağı",options_en:["A user interface","A database table","A smart contract blueprint","A network node"],options_tr:["Bir kullanıcı arayüzü","Bir veritabanı tablosu","Bir akıllı sözleşme taslağı","Bir ağ düğümü"],difficulty:"medium"},
+{q_en:"What ensures transaction atomicity?",q_tr:"İşlem atomikliğini ne sağlar?",a_en:"Synchronization protocol",a_tr:"Senkronizasyon protokolü",options_en:["Database locks","Synchronization protocol","Manual verification","Random selection"],options_tr:["Veritabanı kilitleri","Senkronizasyon protokolü","Manuel doğrulama","Rastgele seçim"],difficulty:"medium"},
+{q_en:"Canton privacy model based on?",q_tr:"Canton gizlilik modeli neye dayanır?",a_en:"Need-to-know principle",a_tr:"Bilmesi gereken prensibi",options_en:["Full transparency","Need-to-know principle","Public disclosure","No privacy"],options_tr:["Tam şeffaflık","Bilmesi gereken prensibi","Herkese açıklama","Gizlilik yok"],difficulty:"medium"},
+{q_en:"How DAML contracts executed?",q_tr:"DAML sözleşmeleri nasıl yürütülür?",a_en:"Deterministically by all nodes",a_tr:"Tüm düğümler tarafından deterministik şekilde",options_en:["Randomly","Only by admin","Deterministically by all nodes","By central server"],options_tr:["Rastgele","Sadece admin tarafından","Tüm düğümler tarafından deterministik şekilde","Merkezi sunucu tarafından"],difficulty:"medium"},
+{q_en:"If domain rejects transaction?",q_tr:"Domain işlemi reddederse?",a_en:"Transaction fails across all domains",a_tr:"İşlem tüm domainlerde başarısız olur",options_en:["Transaction continues","Only that domain rejects","Transaction fails across all domains","System crashes"],options_tr:["İşlem devam eder","Sadece o domain reddeder","İşlem tüm domainlerde başarısız olur","Sistem çöker"],difficulty:"medium"},
+{q_en:"What is multi-party submission?",q_tr:"Çok taraflı gönderim nedir?",a_en:"Multiple parties co-signing transactions",a_tr:"Birden fazla tarafın işlemleri birlikte imzalaması",options_en:["Single party control","Multiple parties co-signing transactions","Anonymous transactions","Automated transactions"],options_tr:["Tek taraf kontrolü","Birden fazla tarafın birlikte imzalaması","Anonim işlemler","Otomatik işlemler"],difficulty:"medium"},
+{q_en:"How Canton achieves interoperability?",q_tr:"Canton birlikte çalışabilirliği nasıl sağlar?",a_en:"Through standardized protocols",a_tr:"Standartlaştırılmış protokoller ile",options_en:["Manual integration","Through standardized protocols","Custom APIs","No interoperability"],options_tr:["Manuel entegrasyon","Standartlaştırılmış protokoller ile","Özel API'lar","Birlikte çalışabilirlik yok"],difficulty:"medium"},
+{q_en:"Role of mediator node?",q_tr:"Mediator düğümünün rolü?",a_en:"Coordinate transaction ordering",a_tr:"İşlem sıralamasını koordine etmek",options_en:["Store data","Coordinate transaction ordering","Validate contracts","Manage users"],options_tr:["Veri saklamak","İşlem sıralamasını koordine etmek","Sözleşmeleri doğrulamak","Kullanıcıları yönetmek"],difficulty:"medium"},
+{q_en:"How Canton prevents unauthorized access?",q_tr:"Canton yetkisiz erişimi nasıl önler?",a_en:"Domain-level access control",a_tr:"Domain düzeyinde erişim kontrolü",options_en:["No prevention","Domain-level access control","IP filtering","Password protection"],options_tr:["Önleme yok","Domain düzeyinde erişim kontrolü","IP filtreleme","Şifre koruması"],difficulty:"hard"},
+{q_en:"What is transaction causality?",q_tr:"İşlem nedenselliği nedir?",a_en:"Maintaining transaction order dependencies",a_tr:"İşlem sırası bağımlılıklarını korumak",options_en:["Random ordering","Maintaining transaction order dependencies","Fast execution","Parallel processing"],options_tr:["Rastgele sıralama","İşlem sırası bağımlılıklarını korumak","Hızlı yürütme","Paralel işleme"],difficulty:"hard"},
+{q_en:"How Canton handles network partitions?",q_tr:"Canton ağ bölünmelerini nasıl ele alır?",a_en:"Through BFT consensus tolerance",a_tr:"BFT konsensüs toleransı ile",options_en:["System stops","Through BFT consensus tolerance","Manual intervention","Data loss"],options_tr:["Sistem durur","BFT konsensüs toleransı ile","Manuel müdahale","Veri kaybı"],difficulty:"hard"},
+{q_en:"Purpose of topology management?",q_tr:"Topoloji yönetiminin amacı?",a_en:"Manage network connections and permissions",a_tr:"Ağ bağlantılarını ve izinleri yönetmek",options_en:["Speed optimization","Manage network connections and permissions","Data storage","User authentication"],options_tr:["Hız optimizasyonu","Ağ bağlantılarını ve izinleri yönetmek","Veri depolama","Kullanıcı kimlik doğrulama"],difficulty:"hard"},
+{q_en:"How Canton ensures data consistency?",q_tr:"Canton veri tutarlılığını nasıl sağlar?",a_en:"Through distributed consensus",a_tr:"Dağıtık konsensüs ile",options_en:["Manual checks","Through distributed consensus","Centralized control","No consistency"],options_tr:["Manuel kontroller","Dağıtık konsensüs ile","Merkezi kontrol","Tutarlılık yok"],difficulty:"hard"},
+{q_en:"What is ledger commitment?",q_tr:"Defter taahhüdü nedir?",a_en:"Finalizing transaction state across domains",a_tr:"İşlem durumunu domainler arasında sonlandırmak",options_en:["Data backup","Finalizing transaction state across domains","User approval","System shutdown"],options_tr:["Veri yedekleme","İşlem durumunu domainler arasında sonlandırmak","Kullanıcı onayı","Sistem kapatma"],difficulty:"hard"},
+{q_en:"How Canton handles contract upgrades?",q_tr:"Canton sözleşme yükseltmelerini nasıl ele alır?",a_en:"Through versioned templates",a_tr:"Versiyonlanmış template'ler ile",options_en:["No upgrades allowed","Through versioned templates","Manual code changes","System restart"],options_tr:["Yükseltmeye izin yok","Versiyonlanmış template'ler ile","Manuel kod değişiklikleri","Sistem yeniden başlatma"],difficulty:"hard"},
+{q_en:"Role of sequencer nodes?",q_tr:"Sequencer düğümlerinin rolü?",a_en:"Order transactions within a domain",a_tr:"Bir domain içinde işlemleri sıralamak",options_en:["Store data","Order transactions within a domain","Validate contracts","Manage users"],options_tr:["Veri saklamak","Bir domain içinde işlemleri sıralamak","Sözleşmeleri doğrulamak","Kullanıcıları yönetmek"],difficulty:"hard"},
+{q_en:"How Canton prevents double spending?",q_tr:"Canton çift harcamayı nasıl önler?",a_en:"Through transaction ordering and consensus",a_tr:"İşlem sıralaması ve konsensüs ile",options_en:["No prevention","Through transaction ordering and consensus","Manual checks","Central authority"],options_tr:["Önleme yok","İşlem sıralaması ve konsensüs ile","Manuel kontroller","Merkezi otorite"],difficulty:"hard"},
+{q_en:"What is event streaming?",q_tr:"Olay akışı nedir?",a_en:"Real-time transaction updates",a_tr:"Gerçek zamanlı işlem güncellemeleri",options_en:["Data backup","Real-time transaction updates","System logs","Error reports"],options_tr:["Veri yedekleme","Gerçek zamanlı işlem güncellemeleri","Sistem günlükleri","Hata raporları"],difficulty:"hard"},
+{q_en:"How Canton achieves Byzantine tolerance?",q_tr:"Canton Bizans toleransını nasıl sağlar?",a_en:"Through BFT consensus algorithm",a_tr:"BFT konsensüs algoritması ile",options_en:["No tolerance","Through BFT consensus algorithm","Manual recovery","Data replication"],options_tr:["Tolerans yok","BFT konsensüs algoritması ile","Manuel kurtarma","Veri çoğaltma"],difficulty:"very hard"},
+{q_en:"What is cross-domain atomic commit?",q_tr:"Domainler arası atomik commit nedir?",a_en:"All-or-nothing transaction completion across domains",a_tr:"Domainler arasında hepsi-ya-hiçbiri işlem tamamlama",options_en:["Partial completion","All-or-nothing transaction completion across domains","Random completion","Manual completion"],options_tr:["Kısmi tamamlama","Domainler arasında hepsi-ya-hiçbiri işlem tamamlama","Rastgele tamamlama","Manuel tamamlama"],difficulty:"very hard"},
+{q_en:"How Canton handles state sync?",q_tr:"Canton durum senkronizasyonunu nasıl ele alır?",a_en:"Through incremental state updates",a_tr:"Artımlı durum güncellemeleri ile",options_en:["Full state transfer","Through incremental state updates","Manual sync","No synchronization"],options_tr:["Tam durum transferi","Artımlı durum güncellemeleri ile","Manuel senkronizasyon","Senkronizasyon yok"],difficulty:"very hard"},
+{q_en:"Purpose of cryptographic commitments?",q_tr:"Kriptografik taahhütlerin amacı?",a_en:"Ensure transaction integrity and privacy",a_tr:"İşlem bütünlüğü ve gizliliğini sağlamak",options_en:["Speed up transactions","Ensure transaction integrity and privacy","Reduce storage","Simplify code"],options_tr:["İşlemleri hızlandırmak","İşlem bütünlüğü ve gizliliğini sağlamak","Depolamayı azaltmak","Kodu basitleştirmek"],difficulty:"very hard"},
+{q_en:"How Canton prevents replay attacks?",q_tr:"Canton replay saldırılarını nasıl önler?",a_en:"Using nonces and timestamps",a_tr:"Nonce'lar ve zaman damgaları kullanarak",options_en:["No prevention","Using nonces and timestamps","IP blocking","Manual monitoring"],options_tr:["Önleme yok","Nonce'lar ve zaman damgaları kullanarak","IP engelleme","Manuel izleme"],difficulty:"very hard"},
+{q_en:"What is dynamic topology update?",q_tr:"Dinamik topoloji güncellemesi nedir?",a_en:"Live network configuration changes",a_tr:"Canlı ağ yapılandırma değişiklikleri",options_en:["Static configuration","Live network configuration changes","Manual restart","No updates allowed"],options_tr:["Statik yapılandırma","Canlı ağ yapılandırma değişiklikleri","Manuel yeniden başlatma","Güncellemeye izin yok"],difficulty:"very hard"},
+{q_en:"How Canton ensures liveness?",q_tr:"Canton canlılığı nasıl sağlar?",a_en:"Through consensus protocol guarantees",a_tr:"Konsensüs protokolü garantileri ile",options_en:["No guarantees","Through consensus protocol guarantees","Manual intervention","Central control"],options_tr:["Garanti yok","Konsensüs protokolü garantileri ile","Manuel müdahale","Merkezi kontrol"],difficulty:"very hard"},
+{q_en:"What is transaction deduplication?",q_tr:"İşlem tekilleştirme nedir?",a_en:"Preventing duplicate transaction processing",a_tr:"Yinelenen işlem işlemeyi önleme",options_en:["Creating duplicates","Preventing duplicate transaction processing","Speeding up transactions","Simplifying code"],options_tr:["Yinelenenler oluşturmak","Yinelenen işlem işlemeyi önleme","İşlemleri hızlandırmak","Kodu basitleştirmek"],difficulty:"very hard"},
+{q_en:"How Canton handles certificate revocation?",q_tr:"Canton sertifika iptalini nasıl ele alır?",a_en:"Through topology management updates",a_tr:"Topoloji yönetimi güncellemeleri ile",options_en:["No revocation","Through topology management updates","Manual process","System restart"],options_tr:["İptal yok","Topoloji yönetimi güncellemeleri ile","Manuel süreç","Sistem yeniden başlatma"],difficulty:"very hard"},
+{q_en:"Role of time in Canton transactions?",q_tr:"Canton işlemlerinde zamanın rolü?",a_en:"Ensuring causality and preventing replays",a_tr:"Nedenselliği sağlamak ve replay'leri önlemek",options_en:["No role","Ensuring causality and preventing replays","Random factor","Only for logging"],options_tr:["Rolü yok","Nedenselliği sağlamak ve replay'leri önlemek","Rastgele faktör","Sadece günlük için"],difficulty:"very hard"}
+];
 
-    <!-- Splash Screen -->
-    <div id="splash">
-        <div class="splash-content animate-in">
-            <h1 class="title">CANTON UZMAN YARIŞMASI</h1>
-            
-            <div class="info-section">
-                <p class="subtitle">
-                    <span class="highlight">Canton Network</span>, finansal kurumların 
-                    <strong>gizlilik odaklı</strong> ve <strong>birlikte çalışabilir</strong> 
-                    blokzincir ağıdır.
-                </p>
-                
-                <div class="features">
-                    <div class="feature-item">
-                        <h3>🚀 Zorluk Seviyesi: UZMAN</h3>
-                        <p>50 teknik soru | Detaylı bilgi gerektirir</p>
-                    </div>
-                    
-                    <div class="feature-item">
-                        <h3>🏆 Ödül Sistemi</h3>
-                        <p>Doğru: +10 Puan | Yanlış: -5 Puan</p>
-                    </div>
-
-                    <div class="feature-item">
-                        <h3>⏱️ Süre Takibi</h3>
-                        <p>Gerçek zamanlı süre takibi</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="input-group">
-                <input type="text" id="playerName" class="form-input" 
-                       placeholder="Liderlik için isminizi girin" maxlength="15">
-                <div id="nameError" class="error-message"></div>
-            </div>
-
-            <button id="startBtn" class="btn pulse">UZMAN MODUNA BAŞLA</button>
-        </div>
-    </div>
-
-    <!-- Game Screen -->
-    <div id="game" class="container">
-        <div class="quiz-card animate-in">
-            <div class="quiz-header">
-                <div class="stats">
-                    <div class="stat">Soru: <span id="questionNum">1</span>/50</div>
-                    <div class="stat">Skor: <span id="score">0</span></div>
-                    <div class="stat">Süre: <span id="timer">00:00</span></div>
-                </div>
-            </div>
-
-            <div class="question-container">
-                <div id="institutionLogo" class="institution-logo">
-                    <img id="logoImg" src="" alt="Logo">
-                </div>
-                <div id="question" class="question-text"></div>
-            </div>
-
-            <div class="options-grid" id="options"></div>
-
-            <div id="feedback" class="feedback"></div>
-            <div id="awards" class="awards-container"></div>
-        </div>
-
-        <div class="action-buttons" style="text-align: center;">
-            <button id="restartBtn" class="btn btn-secondary" style="display: none;">
-                Tekrar Oyna
-            </button>
-        </div>
-
-        <div id="leaderboard" class="leaderboard">
-            <h3 style="text-align: center; color: var(--primary-green); margin-bottom: 1rem;">🏆 UZMAN LİDERLER TABLOSU</h3>
-            <div id="ranks" class="ranks-container"></div>
-        </div>
-    </div>
-
-    <script>
-        class CantonQuiz {
-            constructor() {
-                this.questions = this.initializeQuestions();
-                this.currentIndex = 0;
-                this.score = 0;
-                this.playerName = "";
-                this.answeredCount = 0;
-                this.awards = [];
-                this.startTime = null;
-                this.timerInterval = null;
-                
-                this.leaderboard = JSON.parse(localStorage.getItem('cantonLeaderboard')) || [];
-                this.usedNames = new Set(this.leaderboard.map(e => e.name.toLowerCase().trim()));
-                
-                this.initializeElements();
-                this.setupEventListeners();
-                this.createParticles();
-                this.showLeaderboard();
-            }
-
-            initializeQuestions() {
-                const institutions = [
-                    { 
-                        name: "Canton Network", 
-                        logo: "https://canton.network/img/logo.png", 
-                        questions: [
-                            {q: "Canton'da 'sub-transaction privacy' ne anlama gelir?", a: "Sadece ilgili taraflar işlemi görür", options: ["Tüm ağ görür", "Sadece ilgili taraflar işlemi görür", "Hiç kimse görmez", "Sadece admin görür"]},
-                            {q: "Canton'un 'synchronization protocol' hangi algoritmayı kullanır?", a: "BFT-based consensus", options: ["PoW", "BFT-based consensus", "PoS", "Raft"]},
-                            {q: "DAML'de 'choice' kavramı neyi tanımlar?", a: "Akıllı sözleşmede bir tarafın yapabileceği eylemi", options: ["Veri tipi", "Akıllı sözleşmede bir tarafın yapabileceği eylemi", "Güvenlik katmanı", "Zaman damgası"]},
-                            {q: "Canton'da 'ledger pruning' nasıl çalışır?", a: "Eski veriler silinmez, arşivlenir", options: ["Tüm veriler silinir", "Eski veriler silinmez, arşivlenir", "Sadece yanlışlar silinir", "Hiçbir şey silinmez"]},
-                            {q: "Canton'un 'multi-party submission' özelliği ne sağlar?", a: "Birden fazla tarafın ortak işlem imzalaması", options: ["Hız artışı", "Birden fazla tarafın ortak işlem imzalaması", "Gizlilik kaybı", "Veri kaybı"]},
-                            {q: "Canton'da 'mediator' node'unun görevi nedir?", a: "İşlem sırasını doğrular", options: ["Veri saklar", "İşlem sırasını doğrular", "Anahtar üretir", "Kullanıcı doğrular"]},
-                            {q: "Canton'un 'domain' kavramı neyi temsil eder?", a: "Birlikte çalışan node grubu", options: ["Bir kullanıcı", "Birlikte çalışan node grubu", "Bir işlem", "Bir akıllı sözleşme"]},
-                            {q: "'Canton Global Sync' neyi senkronize eder?", a: "Tüm domain'lerin ledger'ını", options: ["Sadece bir domain", "Tüm domain'lerin ledger'ını", "Sadece kullanıcıları", "Sadece anahtarları"]},
-                            {q: "DAML'de 'ensure' anahtar kelimesi neyi garanti eder?", a: "Koşulun her zaman doğru olduğunu", options: ["Zamanı", "Koşulun her zaman doğru olduğunu", "İmzayı", "Veri tipini"]},
-                            {q: "Canton'da 'divulgence' ne anlama gelir?", a: "Gizli verinin ilgili tarafa açılması", options: ["Veri silinmesi", "Gizli verinin ilgili tarafa açılması", "İşlem iptali", "Anahtar değişimi"]},
-                            {q: "Canton'da 'causality' neyi garanti eder?", a: "İşlem sırasının tutarlılığını", options: ["Gizliliği", "İşlem sırasının tutarlılığını", "Hızı", "Güvenliği"]},
-                            {q: "Canton'da 'confirmation policy' neyi tanımlar?", a: "Kaç node onayı gerektiğini", options: ["Zamanı", "Kaç node onayı gerektiğini", "Ücreti", "Veri tipini"]},
-                            {q: "Canton'da 'participant node' ne yapar?", a: "Ledger'ı tutar ve doğrular", options: ["Sadece izler", "Ledger'ı tutar ve doğrular", "Sadece imzalar", "Hiçbir şey yapmaz"]},
-                            {q: "Canton'da 'sequencer' node'unun görevi nedir?", a: "İşlemleri sıraya koyar", options: ["Doğrulama", "İşlemleri sıraya koyar", "Saklama", "İmzalama"]},
-                            {q: "Canton'da 'topology' neyi tanımlar?", a: "Node'ların bağlantı yapısını", options: ["Veri yapısını", "Node'ların bağlantı yapısını", "Zamanı", "Ücreti"]},
-                            {q: "Canton'da 'privacy model' hangi prensibe dayanır?", a: "Need-to-know", options: ["Full disclosure", "Need-to-know", "Open access", "Admin-only"]},
-                            {q: "Canton'da 'ledger API' hangi protokolü kullanır?", a: "gRPC", options: ["REST", "gRPC", "WebSocket", "GraphQL"]},
-                            {q: "Canton'da 'commitment' neyi temsil eder?", a: "Kriptografik işlem taahhüdü", options: ["Para taahhüdü", "Kriptografik işlem taahhüdü", "Zaman taahhüdü", "Veri taahhüdü"]},
-                            {q: "Canton'da 'view' neyi gösterir?", a: "Bir tarafın gördüğü işlem görünümü", options: ["Tüm ağı", "Bir tarafın gördüğü işlem görünümü", "Sadece geçmiş", "Sadece gelecek"]},
-                            {q: "Canton'da 'activeness check' neyi kontrol eder?", a: "Sözleşmenin hala aktif olup olmadığını", options: ["İmzayı", "Sözleşmenin hala aktif olup olmadığını", "Zamanı", "Veri tipini"]},
-                        ] 
-                    },
-                    { 
-                        name: "Digital Asset", 
-                        logo: "https://www.digitalasset.com/static/logo.png", 
-                        questions: [
-                            {q: "DAML'de 'template' ile 'contract' arasındaki fark nedir?", a: "Template şablon, contract örnek", options: ["Aynı şey", "Template şablon, contract örnek", "Template veri, contract fonksiyon", "Template fonksiyon, contract veri"]},
-                            {q: "DAML'de 'observer' ile 'signatory' farkı nedir?", a: "Observer görür ama imzalayamaz", options: ["Aynı yetki", "Observer görür ama imzalayamaz", "Observer imzalayabilir", "Signatory göremez"]},
-                            {q: "DAML'de 'archive' işlemi ne yapar?", a: "Sözleşmeyi devre dışı bırakır", options: ["Silmek", "Sözleşmeyi devre dışı bırakır", "Kopyalar", "Günceller"]},
-                            {q: "DAML'de 'fetched' ile 'created' arasındaki fark nedir?", a: "Fetched başka sözleşmeden gelir", options: ["Aynı şey", "Fetched başka sözleşmeden gelir", "Created yeni oluşur", "Fark yok"]},
-                        ] 
-                    },
-                    { 
-                        name: "JPMorgan", 
-                        logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/JPMorgan_Chase_Logo_2000.svg/1280px-JPMorgan_Chase_Logo_2000.svg.png", 
-                        questions: [
-                            {q: "JPMorgan'ın Onyx platformu hangi teknolojiyi kullanır?", a: "Canton + Quorum", options: ["Ethereum", "Canton + Quorum", "Hyperledger", "Corda"]},
-                            {q: "Onyx'te 'Liink' neyi sağlar?", a: "Kurumlar arası mesajlaşma", options: ["Token transferi", "Kurumlar arası mesajlaşma", "Akıllı sözleşme", "Veri saklama"]},
-                        ] 
-                    }
-                ];
-
-                let allQuestions = institutions.flatMap(inst => 
-                    inst.questions.map(q => ({ ...q, institution: inst }))
-                );
-                
-                return allQuestions.sort(() => Math.random() - 0.5).slice(0, 50);
-            }
-
-            initializeElements() {
-                this.elements = {
-                    splash: document.getElementById('splash'),
-                    game: document.getElementById('game'),
-                    playerNameInput: document.getElementById('playerName'),
-                    nameError: document.getElementById('nameError'),
-                    startBtn: document.getElementById('startBtn'),
-                    questionNum: document.getElementById('questionNum'),
-                    score: document.getElementById('score'),
-                    timer: document.getElementById('timer'),
-                    question: document.getElementById('question'),
-                    logoImg: document.getElementById('logoImg'),
-                    options: document.getElementById('options'),
-                    feedback: document.getElementById('feedback'),
-                    awards: document.getElementById('awards'),
-                    restartBtn: document.getElementById('restartBtn'),
-                    leaderboard: document.getElementById('leaderboard'),
-                    ranks: document.getElementById('ranks')
-                };
-            }
-
-            setupEventListeners() {
-                this.elements.startBtn.addEventListener('click', () => this.startGame());
-                this.elements.restartBtn.addEventListener('click', () => this.restartGame());
-                
-                this.elements.playerNameInput.addEventListener('input', () => {
-                    this.validateName();
-                });
-
-                this.elements.playerNameInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        this.startGame();
-                    }
-                });
-            }
-
-            validateName() {
-                const name = this.elements.playerNameInput.value.trim();
-                if (this.usedNames.has(name.toLowerCase())) {
-                    this.elements.nameError.textContent = "Bu isim zaten alınmış!";
-                    return false;
-                }
-                this.elements.nameError.textContent = "";
-                return true;
-            }
-
-            startGame() {
-                const name = this.elements.playerNameInput.value.trim();
-                if (!name) {
-                    this.elements.nameError.textContent = "Lütfen isminizi girin!";
-                    return;
-                }
-                
-                if (!this.validateName()) {
-                    return;
-                }
-
-                this.playerName = name;
-                this.usedNames.add(name.toLowerCase());
-                
-                this.elements.splash.style.display = 'none';
-                this.elements.game.style.display = 'block';
-                
-                this.resetGame();
-                this.startTimer();
-                this.showQuestion();
-            }
-
-            resetGame() {
-                this.currentIndex = 0;
-                this.score = 0;
-                this.answeredCount = 0;
-                this.awards = [];
-                this.elements.awards.style.display = 'none';
-                this.elements.awards.innerHTML = '';
-                this.elements.feedback.textContent = '';
-                this.updateUI();
-            }
-
-            startTimer() {
-                this.startTime = Date.now();
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                }
-                
-                this.timerInterval = setInterval(() => {
-                    const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
-                    const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-                    const seconds = (elapsed % 60).toString().padStart(2, '0');
-                    this.elements.timer.textContent = `${minutes}:${seconds}`;
-                }, 1000);
-            }
-
-            showQuestion() {
-                if (this.currentIndex >= this.questions.length) {
-                    this.endGame();
-                    return;
-                }
-
-                const question = this.questions[this.currentIndex];
-                this.displayQuestion(question);
-                this.updateUI();
-            }
-
-            displayQuestion(question) {
-                // Logo ayarla
-                this.elements.logoImg.src = question.institution.logo;
-                this.elements.logoImg.alt = question.institution.name + " Logo";
-                this.elements.logoImg.onerror = () => {
-                    this.elements.logoImg.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48Y2lyY2xlIGN4PSI1MCIgY3k9IjUwIiByPSI0MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDBkNGZmIiBzdHJva2Utd2lkdGg9IjMiLz48dGV4dCB4PSI1MCIgeT0iNTUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxOCIgZmlsbD0iIzAwZDRmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+8J+MoDwvdGV4dD48L3N2Zz4=';
-                };
-
-                this.elements.question.textContent = question.q;
-                this.elements.questionNum.textContent = this.currentIndex + 1;
-                
-                this.elements.options.innerHTML = '';
-                this.shuffleArray([...question.options]).forEach(option => {
-                    const optionElement = this.createOptionElement(option, question.a);
-                    this.elements.options.appendChild(optionElement);
-                });
-            }
-
-            createOptionElement(option, correctAnswer) {
-                const div = document.createElement('div');
-                div.className = 'option';
-                div.textContent = option;
-                div.addEventListener('click', () => this.selectAnswer(option, div, correctAnswer));
-                return div;
-            }
-
-            selectAnswer(selected, element, correctAnswer) {
-                this.answeredCount++;
-                this.disableOptions();
-
-                if (selected === correctAnswer) {
-                    this.handleCorrectAnswer(element);
-                } else {
-                    this.handleWrongAnswer(element, correctAnswer);
-                }
-
-                this.checkAwards();
-                this.updateUI();
-                
-                setTimeout(() => {
-                    this.currentIndex++;
-                    this.showQuestion();
-                }, 2000);
-            }
-
-            handleCorrectAnswer(element) {
-                element.classList.add('correct');
-                this.score += 10;
-                this.showFeedback('✅ Doğru! +10 Puan', 'success');
-                this.playSound('correct');
-            }
-
-            handleWrongAnswer(element, correctAnswer) {
-                element.classList.add('wrong');
-                this.score = Math.max(0, this.score - 5);
-                this.showFeedback('❌ Yanlış! -5 Puan', 'error');
-                this.highlightCorrectAnswer(correctAnswer);
-                this.playSound('wrong');
-            }
-
-            disableOptions() {
-                document.querySelectorAll('.option').forEach(opt => {
-                    opt.style.pointerEvents = 'none';
-                });
-            }
-
-            highlightCorrectAnswer(correctAnswer) {
-                document.querySelectorAll('.option').forEach(opt => {
-                    if (opt.textContent === correctAnswer) {
-                        opt.classList.add('correct');
-                    }
-                });
-            }
-
-            showFeedback(message, type) {
-                this.elements.feedback.textContent = message;
-                this.elements.feedback.className = `feedback ${type}`;
-            }
-
-            playSound(type) {
-                // Basit ses efekti - gerçek uygulamada audio elementleri kullanılabilir
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                if (type === 'correct') {
-                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                } else {
-                    oscillator.frequency.setValueAtTime(300, audioContext.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                }
-                
-                oscillator.start();
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-                oscillator.stop(audioContext.currentTime + 0.5);
-            }
-
-            checkAwards() {
-                if (this.answeredCount === 25 && !this.awards.includes("OG")) {
-                    this.awards.push("OG");
-                    this.showAward("OG Uzmanı");
-                }
-                if (this.answeredCount === 40 && !this.awards.includes("sshh its a secret")) {
-                    this.awards.push("sshh its a secret");
-                    this.showAward("Gizli Uzman");
-                }
-            }
-
-            showAward(name) {
-                this.elements.awards.innerHTML += `<div style="color: var(--primary-green); font-weight: bold; margin: 5px 0;">🎉 UZMAN ÖDÜLÜ: ${name}</div>`;
-                this.elements.awards.style.display = 'block';
-            }
-
-            updateUI() {
-                this.elements.score.textContent = this.score;
-            }
-
-            endGame() {
-                if (this.timerInterval) {
-                    clearInterval(this.timerInterval);
-                }
-
-                this.playSound('correct');
-                
-                // Liderlik tablosuna ekle
-                this.leaderboard.push({ 
-                    name: this.playerName, 
-                    score: this.score,
-                    time: this.elements.timer.textContent
-                });
-                this.leaderboard.sort((a, b) => b.score - a.score);
-                this.leaderboard = this.leaderboard.slice(0, 10);
-                localStorage.setItem('cantonLeaderboard', JSON.stringify(this.leaderboard));
-                
-                this.showLeaderboard();
-                this.elements.restartBtn.style.display = 'inline-block';
-                
-                this.showFeedback(`🎊 TEBRİKLER! Oyun Tamamlandı - Toplam Skor: ${this.score}`, 'success');
-            }
-
-            showLeaderboard() {
-                this.elements.ranks.innerHTML = '';
-                this.leaderboard.forEach((entry, i) => {
-                    const div = document.createElement('div');
-                    div.className = 'rank';
-                    div.innerHTML = `
-                        <span>${i+1}. ${entry.name}</span>
-                        <span>${entry.score} puan</span>
-                        <span>${entry.time}</span>
-                    `;
-                    this.elements.ranks.appendChild(div);
-                });
-                this.elements.leaderboard.style.display = 'block';
-            }
-
-            restartGame() {
-                this.elements.restartBtn.style.display = 'none';
-                this.elements.leaderboard.style.display = 'none';
-                this.elements.splash.style.display = 'flex';
-                this.elements.game.style.display = 'none';
-                this.elements.playerNameInput.value = '';
-                this.elements.nameError.textContent = '';
-            }
-
-            shuffleArray(array) {
-                for (let i = array.length - 1; i > 0; i--) {
-                    const j = Math.floor(Math.random() * (i + 1));
-                    [array[i], array[j]] = [array[j], array[i]];
-                }
-                return array;
-            }
-
-            createParticles() {
-                const container = document.getElementById('particles');
-                const particleCount = 50;
-                
-                for (let i = 0; i < particleCount; i++) {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    
-                    const size = Math.random() * 20 + 5;
-                    particle.style.width = `${size}px`;
-                    particle.style.height = `${size}px`;
-                    particle.style.left = `${Math.random() * 100}%`;
-                    particle.style.top = `${Math.random() * 100}%`;
-                    particle.style.animationDelay = `${Math.random() * 6}s`;
-                    particle.style.background = Math.random() > 0.5 ? 'var(--primary-blue)' : 'var(--primary-green)';
-                    particle.style.opacity = Math.random() * 0.3 + 0.1;
-                    
-                    container.appendChild(particle);
-                }
-            }
-        }
-
-        // Uygulamayı başlat
-        document.addEventListener('DOMContentLoaded', () => {
-            new CantonQuiz();
-        });
-    </script>
+class CantonQuiz{
+constructor(){this.l='en';this.q=this.getQ();this.i=0;this.s=0;this.st=null;this.tm=null;this.a=false;this.init()}
+init(){this.el={};['splash-screen','quiz-container','langToggle','startBtn','mainTitle','mainDescription','questionDisplay','optionsContainer','feedback','nextBtn','restartBtn','score','questionCount','timer','difficultyBadge'].forEach(id=>{this.el[id]=document.getElementById(id)});this.createP();this.setupE();this.updateL()}
+createP(){const c=document.getElementById('particles');for(let i=0;i<50;i++){const p=document.createElement('div');p.className='particle';const z=Math.random()*20+5;p.style.cssText=`width:${z}px;height:${z}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-delay:${Math.random()*6}s;background:${Math.random()>0.5?'#00d4ff':'#00ff88'};opacity:${Math.random()*0.3+0.1}`;c.appendChild(p)}}
+setupE(){this.el.startBtn.onclick=()=>this.start();this.el.nextBtn.onclick=()=>this.next();this.el.restartBtn.onclick=()=>this.restart();this.el.langToggle.onclick=()=>this.toggleL()}
+getQ(){let a=[];while(a.length<40)questions.forEach(q=>a.length<40&&a.push({...q}));return a.sort(()=>Math.random()-0.5)}
+toggleL(){this.l=this.l==='en'?'tr':'en';this.el.langToggle.textContent=this.l==='en'?'TR':'EN';this.updateL();if(this.el['quiz-container'].style.display!=='none')this.loadQ()}
+updateL(){const t={en:{mainTitle:"CANTON NETWORK QUIZ",mainDescription:"Canton Network privacy-enabled blockchain for finance.",startBtn:"START QUIZ",score:"Score:",question:"Question:",time:"Time:",nextBtn:"Next",restartBtn:"Restart"},tr:{mainTitle:"CANTON AĞI TESTİ",mainDescription:"Canton Network finans için gizlilik özellikli blockchain.",startBtn:"TESTE BAŞLA",score:"Skor:",question:"Soru:",time:"Süre:",nextBtn:"Sonraki",restartBtn:"Yeniden Başlat"}}[this.l];this.el.mainTitle.textContent=t.mainTitle;this.el.mainDescription.textContent=t.mainDescription;this.el.startBtn.textContent=t.startBtn;this.el.nextBtn.textContent=t.nextBtn;this.el.restartBtn.textContent=t.restartBtn}
+start(){this.el['splash-screen'].style.display='none';this.el['quiz-container'].style.display='block';this.startT();this.loadQ()}
+startT(){this.st=Date.now();this.tm=setInterval(()=>{const e=Math.floor((Date.now()-this.st)/1000);const m=Math.floor(e/60).toString().padStart(2,'0');const s=(e%60).toString().padStart(2,'0');this.el.timer.textContent=`${this.l==='en'?'Time: ':'Süre: '}${m}:${s}`},1000)}
+loadQ(){if(this.i>=this.q.length){this.end();return}this.a=false;const q=this.q[this.i];this.el.questionDisplay.textContent=this.l==='en'?q.q_en:q.q_tr;this.updateD(q.difficulty);this.el.optionsContainer.innerHTML='';const o=this.l==='en'?q.options_en:q.options_tr;this.shuffle([...o]).forEach((opt,idx)=>{const d=document.createElement('div');d.className='option';d.textContent=opt;d.style.animationDelay=idx*0.1+'s';d.onclick=()=>this.selectA(opt,q);this.el.optionsContainer.appendChild(d)});this.el.score.textContent=`${this.l==='en'?'Score: ':'Skor: '}${this.s}`;this.el.questionCount.textContent=`${this.l==='en'?'Question: ':'Soru: '}${this.i+1}/40`;this.el.nextBtn.style.display='none';this.el.feedback.textContent='';this.el.feedback.className='feedback'}
+updateD(d){const t={en:{easy:'Easy',medium:'Medium',hard:'Hard','very hard':'Very Hard'},tr:{easy:'Kolay',medium:'Orta',hard:'Zor','very hard':'Çok Zor'}}[this.l];this.el.difficultyBadge.textContent=t[d];this.el.difficultyBadge.className=`difficulty-badge ${d}`}
+selectA(s,q){if(this.a)return;this.a=true;const c=this.l==='en'?q.a_en:q.a_tr;const o=this.el.optionsContainer.querySelectorAll('.option');o.forEach(opt=>opt.style.pointerEvents='none');o.forEach(opt=>{if(opt.textContent===c)opt.classList.add('correct');else if(opt.textContent===s&&s!==c)opt.classList.add('wrong')});if(s===c){this.s+=this.getP(q.difficulty);this.el.feedback.textContent=this.l==='en'?'✅ Correct!':'✅ Doğru!';this.el.feedback.className='feedback correct-feedback'}else{this.el.feedback.textContent=this.l==='en'?`❌ Wrong! Correct: ${c}`:`❌ Yanlış! Doğru: ${c}`;this.el.feedback.className='feedback wrong-feedback'}this.el.score.textContent=`${this.l==='en'?'Score: ':'Skor: '}${this.s}`;setTimeout(()=>{this.i++;this.loadQ()},2000)}
+getP(d){return{easy:1,medium:2,hard:3,'very hard':5}[d]}
+next(){this.i++;this.loadQ()}
+end(){clearInterval(this.tm);const t=this.q.reduce((t,q)=>t+this.getP(q.difficulty),0);const p=Math.round((this.s/t)*100);this.el.questionDisplay.textContent=this.l==='en'?`Completed! Score: ${this.s}/${t} (${p}%)`:`Tamamlandı! Skor: ${this.s}/${t} (${p}%)`;this.el.optionsContainer.innerHTML='';this.el.feedback.textContent='';this.el.nextBtn.style.display='none';this.el.restartBtn.style.display='inline-block';this.el.difficultyBadge.style.display='none'}
+restart(){this.i=0;this.s=0;this.q=this.getQ();this.el.restartBtn.style.display='none';this.el.difficultyBadge.style.display='block';this.st=Date.now();this.loadQ()}
+shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}}
+document.addEventListener('DOMContentLoaded',()=>new CantonQuiz());
+</script>
 </body>
 </html>
